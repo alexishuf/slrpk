@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public abstract class SetField extends Command {
     @Option(name = "--help", aliases = {"-h"}, help = true)
@@ -58,8 +59,9 @@ public abstract class SetField extends Command {
             Map<String, Integer> headerMap = parser.getHeaderMap();
             fieldIndex = headerMap.getOrDefault(field, headerMap.size());
             headers = toList(headerMap.keySet(), field);
+            Function<Iterable<String>, Work> loader = Work.loader(headers);
             for (CSVRecord record : parser.getRecords())
-                works.add(new Work(toList(record, defaultValue), headerMap));
+                works.add(loader.apply(toList(record, defaultValue)));
         }
 
         initPredicate(headers);

@@ -100,6 +100,12 @@ public class Work implements Comparable<Work> {
         return r -> new Work(r, projection, headerMap);
     }
 
+    public static Function<Iterable<String>, Work> loader(List<String> headerList) {
+        Map<String, Integer> projection = new HashMap<>();
+        for (int i = 0; i < headerList.size(); i++) projection.put(headerList.get(i), i);
+        return loader(projection);
+    }
+
     public static class BibLoader implements Function<BibTeXEntry, Work> {
         public final ImmutableMap<Object, Integer> headerMap;
 
