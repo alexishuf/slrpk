@@ -43,6 +43,7 @@ public class RunExpression extends Command {
     @Argument(usage = "Expression to execute, if multiple arguments are, given, they will " +
             "be joined by spaces reassembling the expression.")
     private String[] exprTerms = new String[0];
+    private String expr;
 
     public static void main(String[] args) throws Exception {
         RunExpression app = new RunExpression();
@@ -50,11 +51,7 @@ public class RunExpression extends Command {
         parser.parseArgument(args);
         Preconditions.checkArgument(app.csv != null || app.count,
                 "Either --csv or --count must be given");
-        int provided = (app.exprTerms.length > 0 ? 1 : 0) + (app.stdin ? 1 : 0)
-                                                          + (app.exprFile != null ? 1 : 0);
-        if (provided == 0) throw new IllegalArgumentException("No expressions provided!");
-        if (provided >  1) throw new IllegalArgumentException("Multiple expressions provided!");
-
+        app.expr = ExpressionInputHelper.getExpression(app.stdin, app.exprFile, app.exprTerms);
 
         if (app.help)
             parser.printUsage(System.out);
@@ -64,8 +61,6 @@ public class RunExpression extends Command {
 
     @Override
     protected void runCommand() throws Exception {
-        String expr = getExpression();
-
         Set set = new Interpreter().run(expr);
         if (!truncate && csv != null)
             set = new UnionSet(csv.exists() ? new CsvSet(csv) : new EmptySet(), set);
@@ -79,15 +74,5 @@ public class RunExpression extends Command {
         }
         if (count)
             System.out.printf("Count: %d\n", list.size());
-    }
-
-    private String getExpression() throws IOException {
-        if (exprTerms.length > 0)
-            return String.join(" ", exprTerms);
-        if (exprFile != null)
-            return IOUtils.toString(new FileReader(exprFile));
-        if (stdin)
-            return IOUtils.toString(System.in, StandardCharsets.UTF_8);
-        throw new IllegalArgumentException("No expression given!");
     }
 }
