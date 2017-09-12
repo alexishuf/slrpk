@@ -8,9 +8,7 @@ import com.github.alexishuf.slrpk.algebra.antlr4.AlgebraLexer;
 import com.github.alexishuf.slrpk.algebra.antlr4.AlgebraParser;
 import com.github.alexishuf.slrpk.algebra.exceptions.*;
 import com.github.alexishuf.slrpk.algebra.predicates.FieldPredicates;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CodePointCharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import javax.annotation.Nonnull;
@@ -37,6 +35,12 @@ public class Interpreter {
         CodePointCharStream stream = CharStreams.fromString(program);
         AlgebraLexer lexer = new AlgebraLexer(stream);
         AlgebraParser parser = new AlgebraParser(new CommonTokenStream(lexer));
+        parser.addErrorListener(new BaseErrorListener() {
+            @Override
+            public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+                throw new ExpressionParseException("line " + line + ":" + charPositionInLine + " " + msg);
+            }
+        });
         return new Visitor().visit(parser.prog());
     }
 
@@ -140,7 +144,7 @@ public class Interpreter {
                     try {
                         pattern = Pattern.compile(arg);
                     } catch (PatternSyntaxException e) {
-                        throw new InterpretationException("Bad regex", e);
+                        throw new ExpressionException("Bad regex", e);
                     }
                     if (ctx.MTCHS() != null)
                         return FieldPredicates.createMatches(field, pattern);

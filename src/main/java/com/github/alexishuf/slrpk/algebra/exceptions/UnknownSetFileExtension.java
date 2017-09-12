@@ -2,7 +2,7 @@ package com.github.alexishuf.slrpk.algebra.exceptions;
 
 import java.io.File;
 
-public class UnknownSetFileExtension extends InterpretationException {
+public class UnknownSetFileExtension extends ExpressionException {
     private final File file;
 
     public UnknownSetFileExtension(File file) {

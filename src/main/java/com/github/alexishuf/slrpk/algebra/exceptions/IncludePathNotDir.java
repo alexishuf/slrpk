@@ -1,6 +1,6 @@
 package com.github.alexishuf.slrpk.algebra.exceptions;
 
-public class IncludePathNotDir extends InterpretationException {
+public class IncludePathNotDir extends ExpressionException {
     private final String path;
 
     public IncludePathNotDir(String path) {

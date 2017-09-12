@@ -2,7 +2,7 @@ package com.github.alexishuf.slrpk.algebra.iterators;
 
 import com.github.alexishuf.slrpk.Work;
 import com.github.alexishuf.slrpk.algebra.exceptions.SetIOException;
-import com.github.alexishuf.slrpk.algebra.exceptions.InterpretationException;
+import com.github.alexishuf.slrpk.algebra.exceptions.ExpressionException;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public abstract class ClosingSetIterator extends ForwardingSetIterator {
         try {
             return super.next();
         } catch (RuntimeException e) {
-            if (e instanceof InterpretationException) throw e;
+            if (e instanceof ExpressionException) throw e;
             throw wrap(e);
         }
     }

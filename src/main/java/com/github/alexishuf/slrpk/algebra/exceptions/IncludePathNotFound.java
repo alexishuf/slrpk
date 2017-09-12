@@ -1,6 +1,6 @@
 package com.github.alexishuf.slrpk.algebra.exceptions;
 
-public class IncludePathNotFound extends InterpretationException {
+public class IncludePathNotFound extends ExpressionException {
     private final String path;
 
     public IncludePathNotFound(String path) {
