@@ -22,6 +22,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Work implements Comparable<Work> {
+
+    public static final String SLRPK_BIB_KEY = "slrpk-bib-key";
+    public static final String SLRPK_BIB_TYPE = "slrpk-bib-type";
+
     public enum Field {
         Id,
         Author,
@@ -124,11 +128,13 @@ public class Work implements Comparable<Work> {
     }
 
     public static BibLoader bibLoader(BibTeXDatabase db) {
-        return bibLoader(db.getEntries().values().stream()
+
+        return bibLoader(Stream.concat(db.getEntries().values().stream()
                 .flatMap(e -> e.getFields().keySet().stream()
                         .filter(k -> !bibtexKeys.containsKey(k))
-                        .map(k -> k.toString().trim().toLowerCase()))
-                .distinct().sorted().collect(Collectors.toList()));
+                        .map(k -> k.toString().trim().toLowerCase())),
+                Stream.of(SLRPK_BIB_TYPE, SLRPK_BIB_KEY)
+                ).distinct().sorted().collect(Collectors.toList()));
 
     }
     public static BibLoader bibLoader(List<String> keysNormalized) {
@@ -181,6 +187,12 @@ public class Work implements Comparable<Work> {
             if (!bibtexKeys.containsKey(k) && idx != null)
                 values.set(idx, v.toUserString());
         });
+        //add special fields, if present in fieldMap
+        if (fieldMap.containsKey(SLRPK_BIB_KEY))
+            values.set(fieldMap.get(SLRPK_BIB_KEY), entry.getKey().toString());
+        if (fieldMap.containsKey(SLRPK_BIB_TYPE))
+            values.set(fieldMap.get(SLRPK_BIB_TYPE),
+                    entry.getType().toString().trim().toLowerCase());
     }
 
     public Work(Work work) {
