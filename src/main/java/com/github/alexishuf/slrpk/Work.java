@@ -1,6 +1,8 @@
 package com.github.alexishuf.slrpk;
 
 import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.csv.CSVFormat;
@@ -12,6 +14,7 @@ import org.jbibtex.Value;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,6 +49,7 @@ public class Work implements Comparable<Work> {
     }
 
     private @Nonnull ImmutableMap<Object, Integer> fieldMap;
+    private Cache<Field, String> simplifiedCache = CacheBuilder.newBuilder().weakValues().build();
 
     private ImmutableSet<String> extraFields;
     private final @Nonnull List<String> values;
@@ -244,20 +248,6 @@ public class Work implements Comparable<Work> {
     public String getTitle() {return get(Field.Title);}
     public String getDOI() {return get(Field.DOI);}
 
-    @SuppressWarnings("RedundantIfStatement")
-    public boolean isDuplicate(@Nullable Work other) {
-        if (other == null) return false;
-        if (idMatches(other)) return false;
-        if (this.equals(other)) return false;
-        if (!Objects.equals(simplifyDOI(getDOI()), simplifyDOI(other.getDOI())))
-            return false;
-        if (!Objects.equals(simplifyAuthor(getAuthor()), simplifyAuthor(other.getAuthor())))
-            return false;
-        if (!Objects.equals(simplifyTitle(getTitle()), simplifyTitle(other.getTitle())))
-            return false;
-        return true;
-    }
-
     @SuppressWarnings("RedundantIfStatement") //for readability
     public boolean matches(@Nullable Work other) {
         if (other == null) return false;
@@ -286,29 +276,47 @@ public class Work implements Comparable<Work> {
                 && getId().equals(other.getId());
     }
 
-
     private @Nonnull String simplifyDOI(String doi) {
         if (doi == null) return "";
-        Matcher matcher = doiPattern.matcher(doi);
-        return matcher.matches() ? matcher.group(1) : doi;
-    }
-
-    private static @Nonnull String simplifyAuthor(@Nullable String author) {
-        if (author == null) return "";
-
-        author = author.trim().replace("-", "").toLowerCase();
-        Authors authors = Authors.parse(author.trim().replace("-", "").toLowerCase());
-        return authors.stream().map(Author::getCiteInitials).reduce(Authors::join).orElse("");
-    }
-
-    private static @Nonnull String simplifyTitle(@Nullable String author) {
-        if (author == null) return "";
-        String victims = " .,{}():;-+*";
-        for (int i = 0; i < victims.length(); i++) {
-            String c = victims.substring(i, i + 1);
-            author = author.replace(c, "");
+        try {
+            return simplifiedCache.get(Field.DOI, () -> {
+                Matcher matcher = doiPattern.matcher(doi);
+                return matcher.matches() ? matcher.group(1) : doi;
+            });
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException) throw (RuntimeException)e.getCause();
+            throw new RuntimeException(e.getCause());
         }
-        return author.toLowerCase();
+    }
+
+    private @Nonnull String simplifyAuthor(@Nullable String author) {
+        if (author == null) return "";
+        try {
+            return simplifiedCache.get(Field.Author,
+                    () -> Authors.parse(author.trim().replace("-", "").toLowerCase())
+                            .stream().map(Author::getCiteInitials).reduce(Authors::join).orElse("")
+            );
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException) throw (RuntimeException)e.getCause();
+            throw new RuntimeException(e.getCause());
+        }
+    }
+
+    private @Nonnull String simplifyTitle(@Nullable String author) {
+        if (author == null) return "";
+        try {
+            return simplifiedCache.get(Field.Title, () -> {
+                String victims = " .,{}():;-+*", a = author;
+                for (int i = 0; i < victims.length(); i++) {
+                    String c = victims.substring(i, i + 1);
+                    a = a.replace(c, "");
+                }
+                return a.toLowerCase();
+            });
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException) throw (RuntimeException)e.getCause();
+            throw new RuntimeException(e.getCause());
+        }
     }
 
     @Override
