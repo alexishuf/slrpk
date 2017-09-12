@@ -14,8 +14,8 @@ It can be used to:
 * Identify duplicates
 * Evaluate expressions with set operations: union, intersection, complement
 * Set fields in the .csv according to
-** Whether a work is present in a expression
-** Regular expressions
+  * Whether a work is present in a expression
+  * Regular expressions
 
 ## What it is not?
 It is not a SLR (Systematic Literature Review) tool. 
@@ -121,9 +121,14 @@ Typing long file paths is boring, so you can define include paths:
 #include /home/alexis/somewhere/v4
 ```
 
-And then write `scopus.h` instead of `/home/alexis/somewhere/v4/bibs-2017-09-08/scopus.h` the 
+And then write `scopus.bib` instead of `/home/alexis/somewhere/v4/bibs-2017-09-08/scopus.h` the 
 include paths are searched in the declared order, the first match is used regardless of possible 
 matches by other include paths.
+
+If typing include paths (or loading them with `cat`) is bothersome, you can save the include paths 
+as shown above in a file named `.slrpk-expr-prefix`. slrpk searches the directory tree upwards, 
+from its current directory (inclusive) until it finds such file. If the prefix file is found, 
+its contents will be prefixed to any expressions given to slrpk. 
 
 Expressions can be read from a file (`expr-file`), from stdin (`--stdin`) or from arguments. 
 The availability of these methods may vary between commands.  

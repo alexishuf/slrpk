@@ -26,7 +26,8 @@ public class SetFieldExpr extends SetField {
 
     @Override
     protected void runCommand() throws Exception {
-        expression = ExpressionInputHelper.getExpression(stdin, exprFile, exprTerms);
+        expression = ExpressionInputHelper.getExpression(stdin, exprFile, exprTerms,
+                expressionPrefix);
         super.runCommand();
     }
 

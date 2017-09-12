@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static com.github.alexishuf.slrpk.ExpressionInputHelper.getExpression;
+
 public class RunExpression extends Command {
     @Option(name = "--help", aliases = {"-h"}, help = true)
     private boolean help;
@@ -43,7 +45,6 @@ public class RunExpression extends Command {
     @Argument(usage = "Expression to execute, if multiple arguments are, given, they will " +
             "be joined by spaces reassembling the expression.")
     private String[] exprTerms = new String[0];
-    private String expr;
 
     public static void main(String[] args) throws Exception {
         RunExpression app = new RunExpression();
@@ -51,7 +52,7 @@ public class RunExpression extends Command {
         parser.parseArgument(args);
         Preconditions.checkArgument(app.csv != null || app.count,
                 "Either --csv or --count must be given");
-        app.expr = ExpressionInputHelper.getExpression(app.stdin, app.exprFile, app.exprTerms);
+
 
         if (app.help)
             parser.printUsage(System.out);
@@ -61,6 +62,7 @@ public class RunExpression extends Command {
 
     @Override
     protected void runCommand() throws Exception {
+        String expr = getExpression(stdin, exprFile, exprTerms, expressionPrefix);
         Set set = new Interpreter().run(expr);
         if (!truncate && csv != null)
             set = new UnionSet(csv.exists() ? new CsvSet(csv) : new EmptySet(), set);
