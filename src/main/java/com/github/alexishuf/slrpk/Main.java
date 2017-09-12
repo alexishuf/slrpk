@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 
 public class Main {
     public static void main(String[] args) throws Throwable {
-        Class<?> clazz;
+        Class<? extends Command> clazz;
         switch (args[0]) {
             case "update-csv": clazz = UpdateCsv.class; break;
             case "set-field-expr": clazz = SetFieldExpr.class; break;
@@ -21,6 +21,7 @@ public class Main {
         System.arraycopy(args, 1, subArgs, 0, args.length - 1);
 
         try {
+            @SuppressWarnings("JavaReflectionMemberAccess") //it is there, believe me
             Method main = clazz.getMethod("main", String[].class);
             main.invoke(null, (Object) subArgs);
         } catch (InvocationTargetException e) {

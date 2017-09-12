@@ -10,13 +10,28 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Id {
-    public static String idMagic = "567";
-    private static final Pattern annoteIdPattern = Pattern.compile(".*ID" + idMagic + "=(" + idMagic + "-[0-9]+).*", Pattern.DOTALL);
+    private static String idMagic;
+    private static Pattern annoteIdPattern;
+    private static Pattern pattern;
+    public static final @Nonnull Id NULL = new Id("", "");
+
+    static {
+        setIdMagic("W");
+    }
+
+    public static void setIdMagic(String value) {
+        idMagic = value;
+        annoteIdPattern = Pattern.compile(".*ID" + idMagic + "=(" + idMagic + "-[0-9]+).*", Pattern.DOTALL);
+        pattern = Pattern.compile(idMagic+"-(\\d+)");
+    }
+
+    public static String getIdMagic() {
+        return idMagic;
+    }
+
     public final @Nonnull String prefix;
     public final @Nonnull String local;
-    private static Pattern pattern = Pattern.compile(idMagic+"-(\\d+)");
 
-    public static final @Nonnull Id NULL = new Id("", "");
 
     public Id(@Nonnull String prefix, @Nonnull String local) {
         this.prefix = prefix;

@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SetField {
+public abstract class SetField extends Command {
     @Option(name = "--help", aliases = {"-h"}, help = true)
     private boolean help;
     @Option(name = "--csv", required = true, usage = "CSV file to be updated")
@@ -34,6 +34,10 @@ public abstract class SetField {
             "old values are not overwritten by --default-value. The overwrite only occurs if " +
             "the work is found in a .bib file")
     private boolean keep = false;
+    @Option(name = "--prefer", usage = "If set, old values on the csv file will be preferred in " +
+            "place of values computed by this command. This command will only affect works " +
+            "which had no value for --field.")
+    private boolean prefer = false;
     protected int fieldIndex = -1;
 
     public static void main(SetField app, String[] args) throws Exception {
@@ -45,7 +49,8 @@ public abstract class SetField {
             app.run();
     }
 
-    private void run() throws Exception {
+    @Override
+    protected void runCommand() throws Exception {
         List<String> headers;
         List<Work> works = new ArrayList<>();
         try (FileReader reader = new FileReader(csv);
@@ -59,6 +64,7 @@ public abstract class SetField {
 
         initPredicate(headers);
         works.stream().parallel().filter(this::applyPredicate)
+                .filter(w -> !prefer || w.get(field) == null)
                 .forEach(w -> w.set(field, value));
 
         try (FileWriter writer = new FileWriter(csv);
@@ -76,7 +82,7 @@ public abstract class SetField {
         List<String> list = new ArrayList<>();
         Iterator<String> it = record.iterator();
         for (int i = 0; it.hasNext(); i++) {
-            if (i == fieldIndex && !keep) {
+            if (i == fieldIndex && !keep && !prefer) {
                 it.next(); //discard
                 list.add(defaultValue);
             }

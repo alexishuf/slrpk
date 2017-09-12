@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class UpdateCsv {
+public class UpdateCsv extends Command {
     private int nextId = 1;
 
     @Option(name = "--help", aliases = {"-h"}, help = true)
@@ -47,7 +47,8 @@ public class UpdateCsv {
             app.run();
     }
 
-    private void run() throws Exception {
+    @Override
+    protected void runCommand() throws Exception {
         if (outBib == null) {
             File parent = inBib.getParentFile();
             String newName = inBib.getName().replace(".bib", "-withId.bib");

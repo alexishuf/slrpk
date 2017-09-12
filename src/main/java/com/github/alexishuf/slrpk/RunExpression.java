@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class RunExpression {
+public class RunExpression extends Command {
     @Option(name = "--help", aliases = {"-h"}, help = true)
     private boolean help;
 
@@ -62,7 +62,8 @@ public class RunExpression {
             app.run();
     }
 
-    private void run() throws Exception {
+    @Override
+    protected void runCommand() throws Exception {
         String expr = getExpression();
 
         Set set = new Interpreter().run(expr);

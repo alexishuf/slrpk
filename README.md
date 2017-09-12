@@ -60,7 +60,13 @@ The basic element in slrpk is a  `Work`. It will always have 6 fields (that can 
 
 The fields need not be in this order on a .csv file, but there must be headers with these names. 
 When loading from .bib files, these fields are extracted, but Id is not assigned. Only 
-`update-csv` assigns the `Id` field.    
+`update-csv` assigns the `Id` field.
+
+An id always has a prefix, to avoid mixing up works from different reviews. The local part is 
+assigned by counting upwards as ids are assigned. `update-csv` starts counting from `max+1` 
+when the csv file already exists. The Id prefix can be set from the command line with `--im` or 
+can be put in a file named `.slrpk.id` in the working directory where slrpk is run or somewhere 
+up in the directory tree.  
 
 ### Expressions
 
@@ -136,17 +142,18 @@ slrpk expr --count "$(cat ip) old.bib & ~new.bib" #only the count
 ```
 Mark all "Proceedings" for exclusion
 ```bash
-slrpk set-field-rx --csv works.csv --field exclude --value 1 --rx-field Title '(?i)proceedings'
+slrpk set-field-rx --csv works.csv --field exclude --value 1 --rx-field Title '(?i).*proceedings.*'
 ``` 
 Reuse a previous selection in the form of a .bib file
 ```bash
 slrpk set-field-expr --csv works.csv --field include --value 1 $(cat ip) goodstuff.bib
 slrpk set-field-expr --csv works.csv --field exclude --value 1 "$(cat ip) old.csv?(exclude = 1)"
 ```
-Mark proceedings as excluded (--keep avoids erasing old values on works.csv exclude)
+Mark proceedings originating from `scopus.bib` (--keep prevents erasing already assinged values 
+for entries unaffected by this command)
 ```bash
 slrpk set-field-expr --csv works.csv --field exclude --value 1 --keep $(cat ip) \
-"works.csv?(Title % '(?i).*proceedings.*')"
+"scopus.bib?(Title % '(?i).*proceedings.*')"
 ``` 
 
 And more to come ... someday.
