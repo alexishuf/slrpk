@@ -254,12 +254,12 @@ public class Work implements Comparable<Work> {
         if (idMatches(other)) return true;
         if (this.equals(other)) return true;
 
-        String author = simplifyAuthor(getAuthor());
-        String oAuthor = simplifyAuthor(other.getAuthor());
-        String title = simplifyTitle(getTitle());
-        String oTitle = simplifyTitle(other.getTitle());
-        String doi = simplifyDOI(getDOI());
-        String oDoi = simplifyDOI(other.getDOI());
+        String author = simplifyAuthor();
+        String oAuthor = other.simplifyAuthor();
+        String title = simplifyTitle();
+        String oTitle = other.simplifyTitle();
+        String doi = simplifyDOI();
+        String oDoi = other.simplifyDOI();
 
         if ((!doi.isEmpty() || !oDoi.isEmpty()) && doi.equals(oDoi))
             return true;
@@ -276,7 +276,8 @@ public class Work implements Comparable<Work> {
                 && getId().equals(other.getId());
     }
 
-    private @Nonnull String simplifyDOI(String doi) {
+    private @Nonnull String simplifyDOI() {
+        String doi = get(Field.DOI);
         if (doi == null) return "";
         try {
             return simplifiedCache.get(Field.DOI, () -> {
@@ -289,7 +290,8 @@ public class Work implements Comparable<Work> {
         }
     }
 
-    private @Nonnull String simplifyAuthor(@Nullable String author) {
+    private @Nonnull String simplifyAuthor() {
+        String author = get(Field.Author);
         if (author == null) return "";
         try {
             return simplifiedCache.get(Field.Author,
@@ -302,11 +304,12 @@ public class Work implements Comparable<Work> {
         }
     }
 
-    private @Nonnull String simplifyTitle(@Nullable String author) {
-        if (author == null) return "";
+    private @Nonnull String simplifyTitle() {
+        String title = get(Field.Title);
+        if (title == null) return "";
         try {
             return simplifiedCache.get(Field.Title, () -> {
-                String victims = " .,{}():;-+*", a = author;
+                String victims = " .,{}():;-+*", a = title;
                 for (int i = 0; i < victims.length(); i++) {
                     String c = victims.substring(i, i + 1);
                     a = a.replace(c, "");
