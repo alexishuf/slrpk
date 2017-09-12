@@ -321,7 +321,7 @@ public class Work implements Comparable<Work> {
         if (title == null) return "";
         try {
             return simplifiedCache.get(Field.Title, () -> {
-                String victims = " .,{}():;-+*", a = title;
+                String victims = " .,[]{}():;-+*", a = title;
                 for (int i = 0; i < victims.length(); i++) {
                     String c = victims.substring(i, i + 1);
                     a = a.replace(c, "");
