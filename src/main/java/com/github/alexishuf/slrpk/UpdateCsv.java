@@ -86,11 +86,4 @@ public class UpdateCsv extends Command {
         return list.stream().map(Work::getId).map(Id::new).filter(id -> !id.equals(Id.NULL))
                 .map(id -> Integer.parseInt(id.local)).max(Integer::compare).orElse(0) + 1;
     }
-
-    private String mintIdIfMissing(String annote) {
-        String id = Id.getIdFromAnnote(annote);
-        if (id == null)
-            annote = Id.setIdInAnnote(annote, String.valueOf(nextId++));
-        return annote;
-    }
 }
