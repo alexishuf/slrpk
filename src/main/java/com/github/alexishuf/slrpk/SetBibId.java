@@ -36,10 +36,14 @@ public class SetBibId extends Command {
                     "The path is obtained with File.getAbsolutePath().")
     private String bibPathRx;
 
-    @Argument(index = 0, required = true)
+    @Option(name = "--bib-newname", required = true, usage = "Replacement string ($1 is a back " +
+            "reference to capture group 1) to  that builds a path where the bib file with ids " +
+            "will be saved. If --bib-filename-rx was used, the path is relative to the " +
+            "corresponding bib file directory. If --bib-path-rx was used, the path is assumed " +
+            "to be relative to slrpk's own working directory.")
     private String bibNewName;
 
-    @Argument(index = 1, required = true)
+    @Argument(required = true)
     private File[] bibs;
 
     private Pattern bibFilenamePattern;
@@ -60,7 +64,8 @@ public class SetBibId extends Command {
         if (bibPathRx != null) bibPathPattern = Pattern.compile(bibPathRx);
 
         Map<File, File> newBibs = new HashMap<>();
-        for (File bib : bibs) newBibs.put(bib, getOutputFile(bib));
+        for (File bib : bibs)
+            newBibs.put(bib, getOutputFile(bib));
 
         List<Work> works = new CsvSet(csv).toList();
         int nextId = works.stream().map(Work::getId).map(Id::new).filter(id -> !id.equals(Id.NULL))
@@ -93,26 +98,26 @@ public class SetBibId extends Command {
 
     }
 
-    private File getOutputFile(File bibFile) throws IOException {
-        File file;
+    private File getOutputFile(File bib) throws IOException {
+        File out;
         if (bibFilenamePattern != null)
-            file = new File(applyRegexp(bibFilenamePattern, bibFile.getName(), bibNewName));
+            out = new File(bib.getParentFile(), applyRegexp(bibFilenamePattern, bib.getName()));
         else if (bibPathPattern != null)
-            file = new File(applyRegexp(bibPathPattern, bibFile.getName(), bibNewName));
+            out = new File(applyRegexp(bibPathPattern, bib.getName()));
         else
             throw new IllegalStateException();
-        if (!file.getParentFile().exists() && !file.mkdirs())
-            throw new IOException("Failed to mkdirs " + file.getParent());
-        return file;
+        if (!out.getParentFile().exists() && !out.mkdirs())
+            throw new IOException("Failed to mkdirs " + out.getParent());
+        return out;
     }
 
-    private String applyRegexp(Pattern pattern, String input, String replacement) {
+    private String applyRegexp(Pattern pattern, String input) {
         Matcher matcher = pattern.matcher(input);
         if (!matcher.matches())
             throw new IllegalArgumentException(String.format("Regexp %s did not match %s", pattern.pattern(), input));
-        String str = replacement;
+        String str = bibNewName;
         for (int i = 1; i < matcher.groupCount()+1; i++)
-            str = str.replace("$", matcher.group(i));
+            str = str.replace("$"+i, matcher.group(i));
         return str;
     }
 }
