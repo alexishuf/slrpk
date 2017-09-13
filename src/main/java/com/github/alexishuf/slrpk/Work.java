@@ -6,7 +6,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.lang3.StringUtils;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXEntry;
 import org.jbibtex.Key;
@@ -23,6 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.github.alexishuf.slrpk.LatexStringUtils.stripCharDecorations;
+import static org.apache.commons.lang3.StringUtils.replaceChars;
 import static org.apache.commons.lang3.StringUtils.strip;
 import static org.apache.commons.lang3.StringUtils.stripAccents;
 
@@ -312,8 +312,8 @@ public class Work implements Comparable<Work> {
         if (author == null) return "";
         try {
             return simplifiedCache.get(Field.Author,
-                    () -> Authors.parse(stripCharDecorations(
-                            strip(stripAccents(author.trim()), "[]{}-").toLowerCase()))
+                    () -> Authors.parse(replaceChars(stripCharDecorations(
+                            stripAccents(author.trim()).toLowerCase()), "[]{}-", ""))
                             .stream().map(Author::getCiteInitials).reduce(Authors::join).orElse("")
             );
         } catch (ExecutionException e) {
@@ -327,7 +327,7 @@ public class Work implements Comparable<Work> {
         if (title == null) return "";
         try {
             return simplifiedCache.get(Field.Title,
-                    () -> stripAccents(strip(title, " .,[]{}():;-+*")).toLowerCase());
+                    () -> stripAccents(replaceChars(title, " .,[]{}():;-+*", "")).toLowerCase());
         } catch (ExecutionException e) {
             if (e.getCause() instanceof RuntimeException) throw (RuntimeException)e.getCause();
             throw new RuntimeException(e.getCause());
