@@ -279,7 +279,7 @@ public class Work implements Comparable<Work> {
     @SuppressWarnings("RedundantIfStatement") //for readability
     public boolean matches(@Nullable Work other) {
         if (other == null) return false;
-        if (idMatches(other)) return true;
+        if (!simplifyId().isEmpty() && simplifyId().equals(other.simplifyId())) return true;
         if (this.equals(other)) return true;
 
         String author = simplifyAuthor();
@@ -299,9 +299,9 @@ public class Work implements Comparable<Work> {
         return false;
     }
 
-    private boolean idMatches(@Nullable Work other) {
-        return other != null && getId() != null && other.getId() != null
-                && getId().equals(other.getId());
+    private @Nonnull String simplifyId() {
+        String id = getId();
+        return id == null ? "" : id.trim();
     }
 
     private @Nonnull String simplifyDOI() {
