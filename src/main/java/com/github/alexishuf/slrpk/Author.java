@@ -9,12 +9,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.github.alexishuf.slrpk.LatexStringUtils.stripCharDecorations;
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.of;
 
 public class Author {
     private static final Pattern initialsRx =
-            Pattern.compile("\\s*-?(\\{\\\\[^}]+\\{?.}?}|\\\\[^}]+\\{?.}?|[^\\\\{]).*");
+            Pattern.compile("\\s*-?[0-9]?([a-zA-Z]).*");
 
     public final String surname;
     public final List<String> givenNames;
@@ -62,7 +63,7 @@ public class Author {
         }
 
         List<String> initials = givenNames.stream().map(name -> {
-            Matcher matcher = initialsRx.matcher(name);
+            Matcher matcher = initialsRx.matcher(stripCharDecorations(name));
             return matcher.matches() ? matcher.group(1) : name;
         }).collect(Collectors.toList());
 
