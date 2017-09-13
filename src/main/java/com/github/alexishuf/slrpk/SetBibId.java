@@ -3,6 +3,7 @@ package com.github.alexishuf.slrpk;
 import com.github.alexishuf.slrpk.algebra.CollectionSet;
 import com.github.alexishuf.slrpk.algebra.CsvSet;
 import com.google.common.base.Preconditions;
+import org.apache.commons.csv.CSVPrinter;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXEntry;
 import org.jbibtex.BibTeXFormatter;
@@ -67,7 +68,8 @@ public class SetBibId extends Command {
         for (File bib : bibs)
             newBibs.put(bib, getOutputFile(bib));
 
-        List<Work> works = new CsvSet(csv).toList();
+        CsvSet csvSet = new CsvSet(csv);
+        List<Work> works = csvSet.toList();
         int nextId = works.stream().map(Work::getId).map(Id::new).filter(id -> !id.equals(Id.NULL))
                 .map(id -> Integer.parseInt(id.local)).max(Integer::compareTo).orElse(0) + 1;
         if (assign) {
@@ -96,6 +98,13 @@ public class SetBibId extends Command {
             }
         }
 
+        if (assign) {
+            try (FileWriter writer = new FileWriter(csv);
+                 CSVPrinter printer = new CSVPrinter(writer, Work.CSV_FORMAT)) {
+                printer.printRecord(csvSet.getFields());
+                for (Work work : works) printer.printRecord(work.toList());
+            }
+        }
     }
 
     private File getOutputFile(File bib) throws IOException {
