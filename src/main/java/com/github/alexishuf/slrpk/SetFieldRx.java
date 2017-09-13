@@ -25,6 +25,10 @@ public class SetFieldRx extends SetField {
 
     private List<Pattern> patterns;
 
+    public static void main(String[] args) throws Exception {
+        Command.main(new SetFieldRx(), args);
+    }
+
     @Override
     protected boolean applyPredicate(@Nonnull Work work) {
         return Arrays.stream(rxFields).anyMatch(

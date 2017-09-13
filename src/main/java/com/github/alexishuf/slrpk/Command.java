@@ -1,14 +1,16 @@
 package com.github.alexishuf.slrpk;
 
 import org.apache.commons.io.IOUtils;
+import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
 public abstract class Command {
+    @Option(name = "--help", aliases = {"-h"}, help = true)
+    protected boolean help;
     @Option(name = "--im", aliases = {"-i"}, usage = "Set the id magic prefix. Assigned ids " +
             "will have the form String.format(\"%s-%d\", prefix, id)")
     protected String idMagic = null;
@@ -47,6 +49,13 @@ public abstract class Command {
             expressionPrefix = IOUtils.toString(new FileReader(expressionPrefixFile));
         else
             expressionPrefix = findUpwardsAndRead(".slrpk-expr-prefix");
+    }
+
+    public static void main(Command app, String[] args) throws Exception {
+        CmdLineParser parser = new CmdLineParser(app);
+        parser.parseArgument(args);
+        if (app.help) parser.printUsage(System.out);
+        else app.run();
     }
 
     public void run() throws Exception {

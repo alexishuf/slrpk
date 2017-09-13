@@ -22,9 +22,6 @@ import java.util.List;
 import static com.github.alexishuf.slrpk.ExpressionInputHelper.getExpression;
 
 public class RunExpression extends Command {
-    @Option(name = "--help", aliases = {"-h"}, help = true)
-    private boolean help;
-
     @Option(name = "--count", usage = "Output a total count of Works")
     private boolean count;
 
@@ -47,21 +44,13 @@ public class RunExpression extends Command {
     private String[] exprTerms = new String[0];
 
     public static void main(String[] args) throws Exception {
-        RunExpression app = new RunExpression();
-        CmdLineParser parser = new CmdLineParser(app);
-        parser.parseArgument(args);
-        Preconditions.checkArgument(app.csv != null || app.count,
-                "Either --csv or --count must be given");
-
-
-        if (app.help)
-            parser.printUsage(System.out);
-        else
-            app.run();
+        Command.main(new RunExpression(), args);
     }
 
     @Override
     protected void runCommand() throws Exception {
+        Preconditions.checkArgument(csv != null || count, "Either --csv or --count must be given");
+
         String expr = getExpression(stdin, exprFile, exprTerms, expressionPrefix);
         Set set = new Interpreter().run(expr);
         if (!truncate && csv != null)

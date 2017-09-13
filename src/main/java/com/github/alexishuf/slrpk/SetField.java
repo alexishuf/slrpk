@@ -17,8 +17,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 public abstract class SetField extends Command {
-    @Option(name = "--help", aliases = {"-h"}, help = true)
-    private boolean help;
     @Option(name = "--csv", required = true, usage = "CSV file to be updated")
     private File csv;
     @Option(name = "--field", required = true, usage = "Field name (header) to update. " +
@@ -40,15 +38,6 @@ public abstract class SetField extends Command {
             "which had no value for --field.")
     private boolean prefer = false;
     protected int fieldIndex = -1;
-
-    public static void main(SetField app, String[] args) throws Exception {
-        CmdLineParser parser = new CmdLineParser(app);
-        parser.parseArgument(args);
-        if (app.help)
-            parser.printUsage(System.out);
-        else
-            app.run();
-    }
 
     @Override
     protected void runCommand() throws Exception {

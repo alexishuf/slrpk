@@ -19,9 +19,6 @@ import java.util.List;
 public class UpdateCsv extends Command {
     private int nextId = 1;
 
-    @Option(name = "--help", aliases = {"-h"}, help = true)
-    private boolean help;
-
     @Option(name = "--trunc", usage = "Truncates the csv file before writing the new works")
     private boolean truncate;
 
@@ -38,13 +35,7 @@ public class UpdateCsv extends Command {
     private final Work.BibLoader bibLoader = Work.bibLoader(Collections.emptyList());
 
     public static void main(String[] args) throws Exception {
-        UpdateCsv app = new UpdateCsv();
-        CmdLineParser parser = new CmdLineParser(app);
-        parser.parseArgument(args);
-        if (app.help)
-            parser.printUsage(System.out);
-        else
-            app.run();
+        Command.main(new UpdateCsv(), args);
     }
 
     @Override

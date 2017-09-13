@@ -21,7 +21,7 @@ public class SetFieldExpr extends SetField {
     private String expression;
 
     public static void main(String[] args) throws Exception {
-        SetField.main(new SetFieldExpr(), args);
+        Command.main(new SetFieldExpr(), args);
     }
 
     @Override
