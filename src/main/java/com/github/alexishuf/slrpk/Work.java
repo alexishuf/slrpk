@@ -13,6 +13,7 @@ import org.jbibtex.Value;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -59,9 +60,10 @@ public class Work implements Comparable<Work> {
 
     private @Nonnull ImmutableMap<Object, Integer> fieldMap;
     private Cache<Field, String> simplifiedCache = CacheBuilder.newBuilder().weakValues().build();
-
+    private WeakReference<List<String>> allFields = new WeakReference<>(null);
     private ImmutableSet<String> extraFields;
     private final @Nonnull List<String> values;
+
     public Work(@Nonnull Iterable<String> record,
                 @Nonnull Map<String, Integer> projection,
                 @Nonnull ImmutableMap<Object, Integer> fieldMap) {
@@ -217,6 +219,15 @@ public class Work implements Comparable<Work> {
                             .map(k -> (String)k).iterator()).build();
         }
         return extraFields;
+    }
+
+    public @Nonnull List<String> getAllFields() {
+        List<String> list = allFields.get();
+        if (list == null) {
+            list = fieldMap.keySet().stream().map(Object::toString).collect(Collectors.toList());
+            allFields = new WeakReference<>(list);
+        }
+        return list;
     }
 
     public String get(@Nonnull Field field) {return values.get(fieldMap.get(field));}

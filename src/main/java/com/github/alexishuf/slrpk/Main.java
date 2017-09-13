@@ -12,6 +12,7 @@ public class Main {
             case "update-csv": clazz = UpdateCsv.class; break;
             case "set-field-expr": clazz = SetFieldExpr.class; break;
             case "set-field-rx": clazz = SetFieldRx.class; break;
+            case "set-bib-id": clazz = SetBibId.class; break;
             case "expr": clazz = RunExpression.class; break;
             default: clazz = null; break;
         }
