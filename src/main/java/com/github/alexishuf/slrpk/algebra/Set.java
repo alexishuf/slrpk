@@ -3,17 +3,19 @@ package com.github.alexishuf.slrpk.algebra;
 import com.github.alexishuf.slrpk.Work;
 import com.github.alexishuf.slrpk.algebra.iterators.SetIterator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import javax.annotation.Nonnull;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public interface Set {
     List<String> getFields();
     boolean isInfinite();
-    SetIterator iterator();
+    @Nonnull SetIterator iterator(@Nonnull Map<Set, Set> overrides);
+
+    default @Nonnull SetIterator iterator() {
+        return iterator(Collections.emptyMap());
+    }
 
     default List<Work> toList() {
         List<Work> list = new ArrayList<>();

@@ -42,9 +42,10 @@ public class ProjectedSet extends UnarySetOperation {
         return fieldsList;
     }
 
+    @Nonnull
     @Override
-    public SetIterator iterator() {
-        return new ForwardingSetIterator(getOperand().iterator()) {
+    public SetIterator iterator(@Nonnull Map<Set, Set> overrides) {
+        return new ForwardingSetIterator(getOperand(overrides).iterator(overrides)) {
             @Override
             public Work next() {
                 return loader.apply(super.next().toList());

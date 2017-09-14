@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BibSet extends FileSet {
@@ -40,8 +41,9 @@ public class BibSet extends FileSet {
         return headers;
     }
 
+    @Nonnull
     @Override
-    public SetIterator iterator() {
+    public SetIterator iterator(@Nonnull Map<Set, Set> overrides) {
         try (FileReader reader = new FileReader(getFile())) {
             BibTeXParser parser = new BibTeXParser();
             BibTeXDatabase db = parser.parse(reader);

@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -26,10 +27,12 @@ public class IntersectionSet extends BinarySetOperation {
         return headers;
     }
 
+    @Nonnull
     @Override
-    public SetIterator iterator() {
-        Set first = Helpers.firstFinite(getLeft(), getRight());
-        Set second = first == getLeft() ? getRight() : getLeft();
+    public SetIterator iterator(@Nonnull Map<Set, Set> overrides) {
+        Set left = getLeft(overrides), right = getRight(overrides);
+        Set first = Helpers.firstFinite(left, right);
+        Set second = first == left ? right : left;
         HashSet<Work> selected = new HashSet<>();
         List<Work> list = first.toList();
         Function<Work, Work> matchFinder = Helpers.matchFinder(second);
@@ -39,8 +42,8 @@ public class IntersectionSet extends BinarySetOperation {
         for (int i = 0; i < list.size(); i++) {
             Work match = matchFinder.apply(list.get(i));
             if (match != null) {
-                Work l = first == getLeft() ? list.get(i) : match      ;
-                Work r = first == getLeft() ? match       : list.get(i);
+                Work l = first == left ? list.get(i) : match      ;
+                Work r = first == left ? match       : list.get(i);
                 list.set(i, improve.apply(l, r));
                 selected.add(list.get(i));
             } else {

@@ -1,6 +1,8 @@
 package com.github.alexishuf.slrpk.algebra;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.Map;
 
 public abstract class UnarySetOperation extends AbstractSet {
     private  @Nonnull Set operand;
@@ -12,6 +14,11 @@ public abstract class UnarySetOperation extends AbstractSet {
 
     @Nonnull
     public Set getOperand() {
-        return operand;
+        return getOperand(Collections.emptyMap());
+    }
+
+    @Nonnull
+    public Set getOperand(@Nonnull Map<Set, Set> overrides) {
+        return overrides.getOrDefault(operand, operand);
     }
 }

@@ -5,9 +5,11 @@ import com.github.alexishuf.slrpk.algebra.iterators.ForwardingSetIterator;
 import com.github.alexishuf.slrpk.algebra.iterators.SetIterator;
 import com.google.common.base.Preconditions;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class CollectionSet extends AbstractSet {
     private Collection<Work> collection;
@@ -34,8 +36,9 @@ public class CollectionSet extends AbstractSet {
         return fields;
     }
 
+    @Nonnull
     @Override
-    public SetIterator iterator() {
+    public SetIterator iterator(@Nonnull Map<Set, Set> overrides) {
         return new ForwardingSetIterator(collection.iterator());
     }
 }

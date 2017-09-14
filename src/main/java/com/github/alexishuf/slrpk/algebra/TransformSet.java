@@ -7,6 +7,7 @@ import com.github.alexishuf.slrpk.algebra.iterators.SetIterator;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public class TransformSet extends UnarySetOperation {
@@ -38,9 +39,10 @@ public class TransformSet extends UnarySetOperation {
         return fields;
     }
 
+    @Nonnull
     @Override
-    public SetIterator iterator() {
-        return new ForwardingSetIterator(getOperand().iterator()) {
+    public SetIterator iterator(@Nonnull Map<Set, Set> overrides) {
+        return new ForwardingSetIterator(getOperand(overrides).iterator()) {
             @Override
             public Work next() {
                 return function.apply(super.next());

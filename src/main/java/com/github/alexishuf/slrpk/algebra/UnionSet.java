@@ -7,6 +7,7 @@ import com.github.alexishuf.slrpk.Work;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Map;
 
 public class UnionSet extends BinarySetOperation {
     private final List<String> fields;
@@ -22,10 +23,11 @@ public class UnionSet extends BinarySetOperation {
         return fields;
     }
 
+    @Nonnull
     @Override
-    public SetIterator iterator() {
-        List<Work> list = getLeft().toList();
-        Helpers.appendUnique(list, getRight(), improve);
+    public SetIterator iterator(@Nonnull Map<Set, Set> overrides) {
+        List<Work> list = getLeft(overrides).toList();
+        Helpers.appendUnique(list, getRight(overrides), improve);
         Helpers.addFields(list, getFields());
         return new ForwardingSetIterator(list.iterator());
     }

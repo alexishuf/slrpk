@@ -6,6 +6,7 @@ import com.github.alexishuf.slrpk.algebra.iterators.SetIterator;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
@@ -22,9 +23,10 @@ public class FilteredSet extends UnarySetOperation {
         return getOperand().getFields();
     }
 
+    @Nonnull
     @Override
-    public SetIterator iterator() {
-        return new ForwardingSetIterator(getOperand().iterator()) {
+    public SetIterator iterator(@Nonnull Map<Set, Set> overrides) {
+        return new ForwardingSetIterator(getOperand(overrides).iterator()) {
             private Work next = null;
 
             @Override

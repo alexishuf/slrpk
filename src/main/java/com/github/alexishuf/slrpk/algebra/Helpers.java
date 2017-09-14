@@ -6,14 +6,25 @@ import com.github.alexishuf.slrpk.Work;
 import com.github.alexishuf.slrpk.algebra.iterators.SetIterator;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 class Helpers {
+    public static  @Nonnull Map<Set, Set> selectOverrideMap(@Nullable Map<Set, Set> a, @Nullable Map<Set, Set> b) {
+        if (a == null || a.isEmpty()) {
+            return b == null ? Collections.emptyMap() : b;
+        } else if (b == null || b.isEmpty()) {
+            return a;
+        } else {
+            Map<Set, Set> merged = new HashMap<>(a);
+            merged.putAll(b);
+            return merged;
+        }
+    }
+
     public static void appendUnique(@Nonnull List<Work> list, @Nonnull Set set,
                                     @Nonnull BiFunction<Work, Work, Work> improve) {
         try (SetIterator it = set.iterator()) {

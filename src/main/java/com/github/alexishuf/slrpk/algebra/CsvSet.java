@@ -34,8 +34,9 @@ public class CsvSet extends FileSet {
         return headers;
     }
 
+    @Nonnull
     @Override
-    public SetIterator iterator() {
+    public SetIterator iterator(@Nonnull Map<Set, Set> overrides) {
         try {
             FileReader reader = new FileReader(getFile());
             CSVParser parser = new CSVParser(reader, Work.CSV_FORMAT);

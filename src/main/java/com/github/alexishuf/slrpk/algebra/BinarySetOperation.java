@@ -3,6 +3,9 @@ package com.github.alexishuf.slrpk.algebra;
 import com.github.alexishuf.slrpk.Work;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 public abstract class BinarySetOperation extends AbstractSet {
@@ -15,18 +18,23 @@ public abstract class BinarySetOperation extends AbstractSet {
         this.right = right;
     }
 
-    public BinarySetOperation improveWith(BiFunction<Work, Work, Work> function) {
-        this.improve = function;
-        return this;
+    @Nonnull
+    public Set getLeft() {
+        return getLeft(Collections.emptyMap());
     }
 
     @Nonnull
-    public Set getLeft() {
-        return left;
+    public Set getLeft(@Nonnull Map<Set, Set> overrides) {
+        return overrides.getOrDefault(left, left);
     }
 
     @Nonnull
     public Set getRight() {
-        return right;
+        return getRight(Collections.emptyMap());
+    }
+
+    @Nonnull
+    public Set getRight(@Nonnull Map<Set, Set> overrides) {
+        return overrides.getOrDefault(right, right);
     }
 }
