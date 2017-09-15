@@ -159,14 +159,15 @@ public class Work implements Comparable<Work> {
         Map<String, Integer> projection = new HashMap<>();
         for (int i = 0; i < fields.size(); i++) projection.put(fields.get(i), i);
         ImmutableMap<Object, Integer> fieldMap = getFieldMap(projection);
-        return w -> (w.fieldMap.keySet().equals(fieldMap.keySet())) ? w
-                : new Work(enlargeWithNulls(w.toList(), projection.size()), projection, fieldMap);
+        return w -> new Work(reorderAndEnlarge(w, projection), projection, fieldMap);
     }
 
-    private static ArrayList<String> enlargeWithNulls(@Nonnull List<String> list, int size) {
-        ArrayList<String> enlarged = new ArrayList<>(size);
-        enlarged.addAll(list);
-        for (int i = list.size(); i < size; i++) enlarged.add(null);
+    private static ArrayList<String> reorderAndEnlarge(@Nonnull Work work,
+                                                       @Nonnull Map<String, Integer> projection) {
+        ArrayList<String> enlarged = new ArrayList<>(projection.size());
+        for (int i = 0; i < projection.size(); i++) enlarged.add(null);
+        projection.entrySet().stream().sorted(Map.Entry.comparingByValue())
+                .forEach(e -> enlarged.add(e.getValue(), work.get(e.getKey())));
         return enlarged;
     }
 
