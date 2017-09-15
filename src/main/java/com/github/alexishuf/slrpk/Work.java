@@ -263,6 +263,7 @@ public class Work implements Comparable<Work> {
             fieldMap = ImmutableMap.<Object, Integer>builder().putAll(fieldMap)
                     .put(name, values.size()).orderEntriesByValue(Integer::compareTo).build();
             extraFields = null;
+            allFields = new WeakReference<>(null);
             values.add(value);
             return null;
         }
