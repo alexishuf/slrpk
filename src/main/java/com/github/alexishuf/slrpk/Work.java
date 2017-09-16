@@ -74,7 +74,10 @@ public class Work implements Comparable<Work> {
         record.forEach(list::add);
         values = new ArrayList<>();
         for (int i = 0; i < fieldMap.size(); i++) values.add(null);
-        fieldMap.forEach((k, v) -> values.set(v, list.get(projection.get(asString(k)))));
+        fieldMap.forEach((k, v) -> {
+            int idx = projection.get(asString(k));
+            values.set(v, idx >= list.size() ? null : list.get(idx));
+        });
         this.fieldMap = fieldMap;
     }
 
