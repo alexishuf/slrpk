@@ -1,9 +1,9 @@
-package com.github.alexishuf.slrpk;
+package com.github.alexishuf.slrpk.commands;
 
+import com.github.alexishuf.slrpk.Work;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
-import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import javax.annotation.Nonnull;

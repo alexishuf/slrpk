@@ -1,5 +1,6 @@
-package com.github.alexishuf.slrpk;
+package com.github.alexishuf.slrpk.commands;
 
+import com.github.alexishuf.slrpk.Id;
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;

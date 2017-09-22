@@ -1,5 +1,6 @@
-package com.github.alexishuf.slrpk;
+package com.github.alexishuf.slrpk.commands;
 
+import com.github.alexishuf.slrpk.Work;
 import com.google.common.base.Preconditions;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;

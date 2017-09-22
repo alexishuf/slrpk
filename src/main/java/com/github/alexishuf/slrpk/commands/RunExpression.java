@@ -1,22 +1,18 @@
-package com.github.alexishuf.slrpk;
+package com.github.alexishuf.slrpk.commands;
 
+import com.github.alexishuf.slrpk.Work;
 import com.github.alexishuf.slrpk.algebra.Set;
 import com.github.alexishuf.slrpk.algebra.UnionSet;
 import com.google.common.base.Preconditions;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.io.IOUtils;
 import com.github.alexishuf.slrpk.algebra.CsvSet;
 import com.github.alexishuf.slrpk.algebra.EmptySet;
 import com.github.alexishuf.slrpk.algebra.runtime.Interpreter;
 import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.github.alexishuf.slrpk.ExpressionInputHelper.getExpression;

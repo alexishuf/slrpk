@@ -1,6 +1,7 @@
-package com.github.alexishuf.slrpk;
+package com.github.alexishuf.slrpk.commands;
 
-import com.github.alexishuf.slrpk.algebra.CollectionSet;
+import com.github.alexishuf.slrpk.Id;
+import com.github.alexishuf.slrpk.Work;
 import com.github.alexishuf.slrpk.algebra.CsvSet;
 import com.google.common.base.Preconditions;
 import org.apache.commons.csv.CSVPrinter;

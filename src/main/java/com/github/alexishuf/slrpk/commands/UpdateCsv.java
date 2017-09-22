@@ -1,12 +1,13 @@
-package com.github.alexishuf.slrpk;
+package com.github.alexishuf.slrpk.commands;
 
+import com.github.alexishuf.slrpk.Id;
+import com.github.alexishuf.slrpk.Work;
 import com.github.alexishuf.slrpk.algebra.*;
 import org.apache.commons.csv.CSVPrinter;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXEntry;
 import org.jbibtex.BibTeXFormatter;
 import org.jbibtex.BibTeXParser;
-import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
