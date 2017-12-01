@@ -294,8 +294,8 @@ public class Work implements Comparable<Work> {
         String doi = simplifyDOI();
         String oDoi = other.simplifyDOI();
 
-        if ((!doi.isEmpty() || !oDoi.isEmpty()) && doi.equals(oDoi))
-            return true;
+        if (!doi.isEmpty() || !oDoi.isEmpty())
+            return doi.equals(oDoi);
         if (author.equals(oAuthor) && title.equals(oTitle))
             return true;
         if ((author.isEmpty() || oAuthor.isEmpty()) && title.equals(oTitle))
