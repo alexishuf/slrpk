@@ -60,6 +60,7 @@ class Helpers {
 
     public static @Nonnull Work improve(@Nonnull Work left, @Nonnull Work right) {
         String id = nonEmpty(left.getId(), right.getId());
+        String title = longer(left.getTitle(), right.getTitle());
         String abs = longer(left.getAbstract(), right.getAbstract());
         String doi = nonEmpty(left.getDOI(), right.getDOI());
         String authors = nonEmpty(left.getAuthor(), right.getAuthor());
@@ -91,6 +92,7 @@ class Helpers {
 
         Work improved = new Work(left);
         improved.set(Work.Field.Id, id);
+        improved.set(Work.Field.Title, title);
         improved.set(Work.Field.Abstract, abs);
         improved.set(Work.Field.DOI, doi);
         improved.set(Work.Field.Author, authors);
