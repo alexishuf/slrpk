@@ -39,7 +39,7 @@ public class SetFieldExpr extends SetField {
     }
 
     @Override
-    protected boolean applyPredicate(@Nonnull Work work) {
-        return fromBib.stream().anyMatch(work::matches);
+    protected PredicateMatch applyPredicate(@Nonnull Work work) {
+        return fromBib.stream().anyMatch(work::matches) ? new PredicateMatch(work, value) : null;
     }
 }

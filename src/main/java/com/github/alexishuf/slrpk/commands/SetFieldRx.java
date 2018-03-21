@@ -2,6 +2,7 @@ package com.github.alexishuf.slrpk.commands;
 
 import com.github.alexishuf.slrpk.Work;
 import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 
@@ -10,18 +11,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SetFieldRx extends SetField {
-    @Option(name = "--rx-file", usage = "Load all regexps of the file one " +
-            "expression per line (unix line endings), in Java's Pattern syntax.")
-    private File[] rxFile;
+import static org.apache.commons.lang3.tuple.ImmutablePair.of;
 
+public class SetFieldRx extends SetField {
     @Option(name = "--rx-field", required = true, usage = "Apply regexp to the given field name. " +
             "At least one field must be given")
     private String[] rxFields;
 
-    @Argument
+    @Argument(usage = "Set of regexps to apply against all fields. As soon as one of " +
+            "these regexps matches with a field, the value to be set is determined " +
+            "interpreting --value as a replacement string (Mathcer.replaceAll()) for the " +
+            "matched regexp")
     private String[] rxs;
 
     private List<Pattern> patterns;
@@ -31,10 +34,13 @@ public class SetFieldRx extends SetField {
     }
 
     @Override
-    protected boolean applyPredicate(@Nonnull Work work) {
-        return Arrays.stream(rxFields).anyMatch(
-                rxf -> patterns.stream().anyMatch(
-                        p -> p.matcher(work.get(rxf)).matches()));
+    protected synchronized PredicateMatch applyPredicate(@Nonnull Work work) {
+        return Arrays.stream(rxFields)
+                .filter(f -> work.get(f) != null)
+                .flatMap(f -> patterns.stream().map(rx -> rx.matcher(work.get(f))))
+                .filter(Matcher::find)
+                .map(matcher -> new PredicateMatch(work, matcher.replaceAll(value)))
+                .findFirst().orElse(null);
     }
 
     @Override

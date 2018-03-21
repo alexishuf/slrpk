@@ -45,7 +45,7 @@ slrpk has the following sub-commands:
 * `set-field-expr`: evaluates an [expression](#expressions) and for each work in the given 
                     `--csv` that is also in that result, will assign a special value to a field.
 * `set-field-rx`: similar to `set-field-expr` but evaluates a regexp against a field in the 
-                  work itself.
+                  work itself. `--value` is interpreted as a Java replacement string
                   
 `slrpk expr --help` and corresponding commands give detailed usage information. 
 

@@ -7,13 +7,11 @@ import org.apache.commons.csv.CSVRecord;
 import org.kohsuke.args4j.Option;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 public abstract class SetField extends Command {
@@ -54,9 +52,10 @@ public abstract class SetField extends Command {
         }
 
         initPredicate(headers);
-        works.stream().parallel().filter(this::applyPredicate)
-                .filter(w -> !prefer || w.get(field) == null)
-                .forEach(w -> w.set(field, value));
+        works.stream().parallel().map(this::applyPredicate)
+                .filter(Objects::nonNull)
+                .filter(m -> !prefer || m.work.get(field) == null)
+                .forEach(m -> m.work.set(field, m.value));
 
         try (FileWriter writer = new FileWriter(csv);
              CSVPrinter printer = new CSVPrinter(writer, Work.CSV_FORMAT)) {
@@ -65,7 +64,24 @@ public abstract class SetField extends Command {
         }
     }
 
-    protected abstract boolean applyPredicate(@Nonnull Work work);
+    public static class PredicateMatch {
+        public Work work;
+        public String value;
+
+        public PredicateMatch(Work work, String value) {
+            this.work = work;
+            this.value = value;
+        }
+
+        public Work getWork() {
+            return work;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+
+    protected abstract @Nullable PredicateMatch applyPredicate(@Nonnull Work work);
 
     protected abstract void initPredicate(@Nonnull List<String> headers) throws Exception;
 
