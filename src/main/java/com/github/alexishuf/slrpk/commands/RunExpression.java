@@ -76,6 +76,6 @@ public class RunExpression extends Command {
             }
         }
         if (count)
-            System.out.printf("Count: %d\n", list.size());
+            System.out.println(list.size());
     }
 }
