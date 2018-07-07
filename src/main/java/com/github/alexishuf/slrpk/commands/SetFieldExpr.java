@@ -54,8 +54,10 @@ public class SetFieldExpr extends SetField {
         Work match = fromBib.stream().filter(work::matches).findFirst().orElse(null);
         if (match == null) return null;
         String value = derefValue ? match.get(this.value) : this.value;
-        if (append)
-            value = work.get(field) + appendSep + value;
+        if (append) {
+            String old = work.get(field);
+            value = (old != null ? old + appendSep : "") + value;
+        }
         return new PredicateMatch(work, value != null ? value : defaultValue);
     }
 }
