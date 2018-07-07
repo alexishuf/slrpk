@@ -5,9 +5,12 @@ import org.jbibtex.BibTeXEntry;
 import org.jbibtex.Key;
 import org.jbibtex.StringValue;
 
+import java.awt.geom.RectangularShape;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import static java.lang.reflect.Modifier.STATIC;
@@ -17,6 +20,7 @@ public class Work2BibTeX implements Function<Work, BibTeXEntry> {
     private boolean tolerateMissing;
     private static final Map<String, Key> defaultMap;
     private StringValue.Style stringStyle = StringValue.Style.BRACED;
+    private Set<String> generatedBibKeys = new HashSet<>();
 
     public Work2BibTeX(Map<String, Key> map, boolean tolerateMissing) {
         this.map = map;
@@ -42,8 +46,8 @@ public class Work2BibTeX implements Function<Work, BibTeXEntry> {
         Key type = new Key(typeString);
 
         String keyString = w.get(Work.SLRPK_BIB_KEY);
-        Preconditions.checkArgument(keyString != null && !keyString.isEmpty(),
-                "Bad value for " + Work.SLRPK_BIB_KEY + " in " + w);
+        if (keyString == null || keyString.trim().isEmpty())
+            keyString = generateBibKey(w);
         Key entryKey = new Key(keyString);
 
         BibTeXEntry entry = new BibTeXEntry(type, entryKey);
@@ -56,6 +60,19 @@ public class Work2BibTeX implements Function<Work, BibTeXEntry> {
         }
 
         return entry;
+    }
+
+    private String generateBibKey(Work w) {
+        Authors authors = Authors.parse(w.getAuthor());
+        String year = w.get("year");
+        String keyBase = authors.get(0).surname + (year == null ? "" : year);
+        String key = keyBase;
+        synchronized (this) {
+            for (int i = 0; generatedBibKeys.contains(key); ++i)
+                key = String.format("%s%02d", keyBase, i);
+            generatedBibKeys.add(key);
+        }
+        return key;
     }
 
     static {
