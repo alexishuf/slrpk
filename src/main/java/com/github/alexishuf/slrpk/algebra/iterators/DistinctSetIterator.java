@@ -29,7 +29,8 @@ public class DistinctSetIterator extends ForwardingSetIterator {
     public boolean hasNext() {
         while (this.next == null && target.hasNext()) {
             Work next = target.next();
-            if (history.stream().noneMatch(next::matches)) {
+            boolean isLarge = history.size() > 8*Runtime.getRuntime().availableProcessors();
+            if ((isLarge ? history.parallelStream() : history.stream()).noneMatch(next::matches)) {
                 history.add(next);
                 this.next = next;
             }

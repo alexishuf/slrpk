@@ -43,10 +43,10 @@ class Helpers {
     public static @Nonnull Function<Work, Work> matchFinder(@Nonnull Set set) {
         if (ComplementSet.isComplement(set)) {
             List<Work> list = ComplementSet.wrap(set).toList();
-            return w -> list.stream().noneMatch(w::matches) ? w : null;
+            return w -> list.parallelStream().noneMatch(w::matches) ? w : null;
         } else {
             List<Work> list = set.toList();
-            return w -> list.stream().filter(w::matches).findFirst().orElse(null);
+            return w -> list.parallelStream().filter(w::matches).findFirst().orElse(null);
         }
     }
 

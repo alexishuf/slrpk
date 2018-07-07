@@ -70,7 +70,7 @@ public class RunExpression extends Command {
         }
         if (bib != null) {
             BibTeXDatabase db = new BibTeXDatabase();
-            list.stream().map(new Work2BibTeX()).forEach(db::addObject);
+            list.parallelStream().map(new Work2BibTeX()).forEachOrdered(db::addObject);
             try (FileWriter writer = new FileWriter(bib)) {
                 new BibTeXFormatter().format(db, writer);
             }
