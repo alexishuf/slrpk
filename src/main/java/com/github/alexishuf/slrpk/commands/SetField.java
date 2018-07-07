@@ -30,11 +30,11 @@ public abstract class SetField extends Command {
     @Option(name = "--keep", usage = "If set and the given --field already exists in the CSV, " +
             "old values are not overwritten by --default-value. The overwrite only occurs if " +
             "the work is found in a .bib file")
-    private boolean keep = false;
+    protected boolean keep = false;
     @Option(name = "--prefer", usage = "If set, old values on the csv file will be preferred in " +
             "place of values computed by this command. This command will only affect works " +
             "which had no value for --field.")
-    private boolean prefer = false;
+    protected boolean prefer = false;
     protected int fieldIndex = -1;
 
     @Override
