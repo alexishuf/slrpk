@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.github.alexishuf.slrpk.LatexStringUtils.stripCharDecorations;
+import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.replaceChars;
 import static org.apache.commons.lang3.StringUtils.strip;
 import static org.apache.commons.lang3.StringUtils.stripAccents;
@@ -55,6 +56,7 @@ public class Work implements Comparable<Work> {
         bibtexKeys.put(BibTeXEntry.KEY_TITLE,      Field.Title);
         bibtexKeys.put(new Key("abstract"), Field.Abstract);
         bibtexKeys.put(new Key("keywords"), Field.Kw);
+        bibtexKeys.put(new Key("author_keywords"), Field.Kw);
         bibtexKeys.put(BibTeXEntry.KEY_DOI,        Field.DOI);
     }
 
@@ -98,8 +100,6 @@ public class Work implements Comparable<Work> {
             if (tmp.containsKey(name)) {
                 tmp.put(Field.valueOf(name), tmp.get(name));
                 tmp.remove(name);
-            } else {
-                throw new IllegalArgumentException("Missing Field " + name + " in projection");
             }
         }
         LinkedHashMap<Object, Integer> sorted = new LinkedHashMap<>();
@@ -113,9 +113,28 @@ public class Work implements Comparable<Work> {
     }
 
     public static Function<Iterable<String>, Work> loader(Map<String, Integer> projection) {
-        Preconditions.checkArgument(projection.keySet().containsAll(fieldNames));
+        Set<String> missing = fieldNames.stream().filter(n -> !projection.containsKey(n))
+                                        .collect(Collectors.toSet());
+        boolean missingId = missing.contains(Field.Id.name());
+        missing.remove(Field.Id.name());
+        Preconditions.checkArgument(missing.isEmpty(), format("Missing fields: %s", missing));
         ImmutableMap<Object, Integer> headerMap = getFieldMap(projection);
-        return r -> new Work(r, projection, headerMap);
+        return r -> {
+            if (missingId) {
+                List<String> list = new ArrayList<>();
+                list.add(null);
+                r.forEach(list::add);
+                Map<String, Integer> projection2 = new HashMap<>();
+                projection.forEach((k, v) -> projection2.put(k, v+1));
+                projection2.put(Field.Id.name(), 0);
+                ImmutableMap.Builder<Object, Integer> builder = ImmutableMap.builder();
+                headerMap.forEach((k, v) -> builder.put(k, v+1));
+                builder.put(Field.Id, 0);
+                return new Work(list, projection2, builder.build());
+            } else {
+                return new Work(r, projection, headerMap);
+            }
+        };
     }
 
     public static Function<Iterable<String>, Work> loader(List<String> headerList) {
@@ -186,7 +205,17 @@ public class Work implements Comparable<Work> {
                 Id.getIdFromAnnote(annote == null ? null : annote.toUserString()));
         bibtexKeys.forEach((k, v) -> {
             Value bibValue = entry.getField(k);
-            values.set(fieldMap.get(v), bibValue == null ? null : bibValue.toUserString());
+            String old = values.get(fieldMap.get(v));
+            String sep = ";";
+            String cat = (old==null?"":old) + (bibValue==null?"":bibValue.toUserString());
+            if (cat.trim().isEmpty()) sep = "";
+            else if (!cat.contains(";") && cat.contains(",")) sep = ",";
+
+            String value = old;
+            if (value != null && bibValue != null) value += sep + bibValue.toUserString();
+            else if             (bibValue != null) value  = bibValue.toUserString();
+
+            values.set(fieldMap.get(v), value);
         });
         if (getKw() != null) //normalize keywords
             set(Field.Kw, Keywords.parse(getKw()).toString());
