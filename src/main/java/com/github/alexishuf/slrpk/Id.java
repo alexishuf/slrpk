@@ -39,7 +39,7 @@ public class Id {
     }
 
     public Id(@Nullable String string) {
-        if (string == null || string.isEmpty()) {
+        if (string == null || string.trim().isEmpty()) {
             prefix = NULL.prefix;
             local = NULL.local;
         } else {

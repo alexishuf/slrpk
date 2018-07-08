@@ -38,15 +38,15 @@ public class SetBibId extends Command {
                     "The path is obtained with File.getAbsolutePath().")
     private String bibPathRx;
 
-    @Option(name = "--bib-newname", required = true, usage = "Replacement string ($1 is a back " +
+    @Option(name = "--bib-newname", usage = "Replacement string ($1 is a back " +
             "reference to capture group 1) to  that builds a path where the bib file with ids " +
             "will be saved. If --bib-filename-rx was used, the path is relative to the " +
             "corresponding bib file directory. If --bib-path-rx was used, the path is assumed " +
             "to be relative to slrpk's own working directory.")
     private String bibNewName;
 
-    @Argument(required = true)
-    private File[] bibs;
+    @Argument
+    private File[] bibs = {};
 
     private Pattern bibFilenamePattern;
     private Pattern bibPathPattern;
@@ -60,8 +60,8 @@ public class SetBibId extends Command {
 
     @Override
     protected void runCommand() throws Exception {
-        Preconditions.checkArgument(bibFilenameRx != null || bibPathRx != null);
-        Preconditions.checkArgument(bibs.length > 0);
+//        Preconditions.checkArgument(bibFilenameRx != null || bibPathRx != null);
+//        Preconditions.checkArgument(bibs.length > 0);
         if (bibFilenameRx != null) bibFilenamePattern = Pattern.compile(bibFilenameRx);
         if (bibPathRx != null) bibPathPattern = Pattern.compile(bibPathRx);
 
