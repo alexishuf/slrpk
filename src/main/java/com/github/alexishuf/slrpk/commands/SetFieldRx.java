@@ -20,7 +20,7 @@ import static org.apache.commons.lang3.tuple.ImmutablePair.of;
 
 public class SetFieldRx extends SetField {
     @Option(name = "--rx-file", usage = "File with regexps, one per line")
-    private File rxFile;
+    private File rxFile = null;
 
     @Option(name = "--rx-field", required = true, usage = "Apply regexp to the given field name. " +
             "At least one field must be given")
@@ -69,8 +69,11 @@ public class SetFieldRx extends SetField {
                 "Cannot -acc with multiple --rx-fields");
 
         patterns = new ArrayList<>();
-        try (FileInputStream in = new FileInputStream(rxFile)) {
-            IOUtils.readLines(in, "UTF-8").forEach(l -> patterns.add(Pattern.compile(l)));
+        if (rxFile != null) {
+            try (FileInputStream in = new FileInputStream(rxFile)) {
+                IOUtils.readLines(in, "UTF-8")
+                        .forEach(l -> patterns.add(Pattern.compile(l)));
+            }
         }
         for (String rx : rxs) patterns.add(Pattern.compile(rx));
         Preconditions.checkArgument(!patterns.isEmpty(), "Provide at least one regexp!");
